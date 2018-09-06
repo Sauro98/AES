@@ -11,33 +11,12 @@
 
 #endif //AES_CIPHER_H
 
-class Cipher{
-    State s;
+class Cipher {
+    AESKey key;
 public:
-    Cipher(uint8_t* input, const std::string& key) : s(input, key){
-    }
+    Cipher(const uint8_t *_key, const uint8_t _key_length) : key(_key, _key_length) {}
 
-    void crypt(){
-        s.addRoundKey();
-        for(uint8_t round = 1; round < s.key.rounds -1; round++){
-            s.subBytes();
-            s.shiftRows();
-            s.mixColumns();
-            s.addRoundKey();
-        }
-        s.subBytes();
-        s.shiftRows();
-        s.addRoundKey();
-    }
+    void crypt(uint8_t *input) const;
 
-    void printState(){
-        std::string encr;
-        for(uint8_t a = 0; a < 16; a++){
-            std::cout<<std::hex<<(uint16_t)s.getElement(a)<<" ";
-            encr += s.getElement(a);
-        }
-        std::cout<<std::endl;
-
-        std::cout<<encr<<std::endl;
-    }
+    void decrypt(uint8_t *input) const;
 };

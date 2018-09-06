@@ -5,22 +5,24 @@
 #include <gtest/gtest.h>
 #include "../src/State.h"
 
-static const std::string key128 = "0123456789abcdef";
-
 TEST(State, constructor) {
-    uint8_t orig[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
-    uint8_t exp[] = {0, 4, 8, 12,
-                     1, 5, 9, 13,
-                     2, 6, 10, 14,
-                     3, 7, 11, 15};
-    State state(orig, key128);
-    for (uint8_t a = 0; a < STATE_DIM; a++)
-        EXPECT_EQ(state.getElement(a), exp[a]);
+    uint8_t orig[] = {0x32, 0x43, 0xf6, 0xa8, 0x88, 0x5a, 0x30, 0x8d, 0x31, 0x31, 0x98, 0xa2, 0xe0, 0x37, 0x07, 0x34};
+    uint8_t exp[] = {0x32, 0x88, 0x31, 0xe0,
+                     0x43, 0x5a, 0x31, 0x37,
+                     0xf6, 0x30, 0x98, 0x07,
+                     0xa8, 0x8d, 0xa2, 0x34};
+    State state(orig);
+    for (uint8_t a = 0; a < 4; a++){
+        for (uint8_t b = 0; b < 4; b++){
+            EXPECT_EQ(state.getCell(a,b), exp[4*a + b]);
+        }
+    }
+
 }
 
 TEST(State, getCell) {
     uint8_t orig[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
-    State state(orig, key128);
+    State state(orig);
     EXPECT_EQ(state.getCell(0, 0), 0);
     EXPECT_EQ(state.getCell(0, 1), 4);
     EXPECT_EQ(state.getCell(0, 2), 8);
@@ -108,7 +110,7 @@ TEST(State, WORD_MUL) {
 
 TEST(State, shiftRows) {
     uint8_t orig[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
-    State state(orig, key128);
+    State state(orig);
     state.shiftRows();
     uint8_t exp[] = {0, 4, 8, 12,
                      5, 9, 13, 1,
@@ -118,27 +120,18 @@ TEST(State, shiftRows) {
                         1, 5, 9, 13,
                         2, 6, 10, 14,
                         3, 7, 11, 15};
-    for (uint8_t a = 0; a < STATE_DIM; a++)
-        EXPECT_EQ(state.getElement(a), exp[a]);
+    for (uint8_t a = 0; a < 4; a++)
+        for(uint8_t b = 0; b < 4; b++)
+        EXPECT_EQ(state.getCell(a,b), exp[4*a + b]);
     state.invShiftRows();
 
-    for (uint8_t a = 0; a < STATE_DIM; a++)
-        EXPECT_EQ(state.getElement(a), expinv[a]);
+    for (uint8_t a = 0; a < 4; a++)
+        for(uint8_t b = 0; b < 4; b++)
+            EXPECT_EQ(state.getCell(a,b), expinv[4*a + b]);
 
 }
 
 TEST(State, mixColumns) {
-    /*uint8_t orig[] = {0x63, 0x09, 0xcd, 0xba,
-                      0x53, 0x60, 0x70, 0xca,
-                      0xe0, 0xe1, 0xb7, 0xd0,
-                      0x8c, 0x04, 0x51, 0xe7};
-    State state(orig, key128);
-    state.mixColumns();
-    state.printState();
-    uint8_t exp[] = {0x5f, 0x72, 0x64, 0x15, 0x57, 0xf5, 0xbc, 0x92, 0xf7, 0xbe, 0x3b, 0x29, 0x1d, 0xb9, 0xf9, 0x1a};
-
-    for (uint8_t a = 0; a < STATE_DIM; a++)
-        EXPECT_EQ(state.getElement(a), exp[a]);*/
     uint8_t orig[] = {0x63, 0x53, 0xe0, 0x8c,
                       0x09, 0x60, 0xe1, 0x04,
                       0xcd, 0x70, 0xb7, 0x51,
@@ -147,22 +140,21 @@ TEST(State, mixColumns) {
                      0x72, 0xf5, 0xbe, 0xb9,
                      0x64, 0xbc, 0x3b, 0xf9,
                      0x15, 0x92, 0x29, 0x1a};
-    State state(orig, key128);
+    State state(orig);
     state.mixColumns();
-    state.printState();
-    for (int a = 0; a < 16; a++)
-        EXPECT_EQ(state.getElement(a), exp[a]);
+    for (uint8_t a = 0; a < 4; a++)
+        for(uint8_t b = 0; b < 4; b++)
+            EXPECT_EQ(state.getCell(a,b), exp[4*a + b]);
     state.invMixColumns();
-    state.printState();
-    for(int a = 0; a < 4; a++){
-        for(int b = 0; b < 4; b++)
-            EXPECT_EQ(state.getCell(a,b), orig[4*a + b]);
-    }
+    for (uint8_t a = 0; a < 4; a++)
+        for(uint8_t b = 0; b < 4; b++)
+            EXPECT_EQ(state.getCell(a,b), orig[4*b + a]);
+
 }
 
 TEST(State, SUB_BYTES) {
     uint8_t orig[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
-    State state(orig, key128);
+    State state(orig);
     state.subBytes();
     state.invSubBytes();
 
@@ -170,6 +162,7 @@ TEST(State, SUB_BYTES) {
                      1, 5, 9, 13,
                      2, 6, 10, 14,
                      3, 7, 11, 15};
-    for (uint8_t a = 0; a < STATE_DIM; a++)
-        EXPECT_EQ(state.getElement(a), exp[a]);
+    for (uint8_t a = 0; a < 4; a++)
+        for(uint8_t b = 0; b < 4; b++)
+            EXPECT_EQ(state.getCell(a,b), exp[4*a + b]);
 }

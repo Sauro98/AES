@@ -4,17 +4,8 @@
 
 #include "State.h"
 
-State::State(uint8_t *array, const std::string &_key) : key(reinterpret_cast<const uint8_t *>(_key.c_str()),
-                                                            (uint16_t) _key.length()) {
-    for (uint8_t r = 0; r < ROWS; r++) {
-        for (uint8_t c = 0; c < COLUMNS; c++) {
-            stateArray[COLUMNS * r + c] = array[r + COLUMNS * c];
-        }
-    }
-}
-
-uint8_t State::getElement(uint8_t index) const {
-    return stateArray[index];
+State::State(uint8_t *array){
+    stateArray = array;
 }
 
 uint8_t State::getCell(uint8_t row, uint8_t column) const {
@@ -82,13 +73,16 @@ void State::invMixColumns() {
 }
 
 
-void State::addRoundKey() {
-    uint8_t *keyArr = key.getRoundKey();
+void State::addRoundKey(const AESKey& key, uint8_t round) {
+    //std::cout<<"k_sch ";
     for (uint8_t column = 0; column < COLUMNS; column++) {
+        const uint8_t *keyArr = key.getKeyFor(round,column);
         for (uint8_t row = 0; row < ROWS; row++) {
-            stateArray[STATE_AT(row, column)] = stateArray[STATE_AT(row, column)] ^ keyArr[ROWS * column + row];
+            stateArray[STATE_AT(row, column)] = stateArray[STATE_AT(row, column)] ^ keyArr[row];
+            //std::cout<<std::setfill('0') << std::setw(2) <<std::hex<<(uint16_t)keyArr[row];
         }
     }
+    //std::cout<<std::endl;
 }
 
 void State::subBytes() {
@@ -97,6 +91,7 @@ void State::subBytes() {
 
 void State::invSubBytes() {
     INV_SUB_BYTES(stateArray, stateArray);
+
 }
 
 

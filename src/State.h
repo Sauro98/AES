@@ -10,13 +10,14 @@
 
 #include <cstring>
 #include <iostream>
+#include <iomanip>
 #include "SBox.h"
 
 #define STATE_DIM 4*4
 #define ROWS 4
 #define COLUMNS 4
 
-#define STATE_AT(x, y) ( (x)*COLUMNS + (y))
+#define STATE_AT(x, y) ( (y)*COLUMNS + (x))
 
 inline void ARR_SWAP(uint8_t* arr, uint8_t pos1, uint8_t pos2){
     uint8_t tmp = arr[pos1];
@@ -26,21 +27,19 @@ inline void ARR_SWAP(uint8_t* arr, uint8_t pos1, uint8_t pos2){
 
 class State {
 private:
-    uint8_t stateArray[STATE_DIM];
+    uint8_t* stateArray;
 
 public:
-    AESKey key;
-    State(uint8_t *array, const std::string& _key);
-
-    uint8_t getElement(uint8_t index) const;
+    State(uint8_t *array);
 
     uint8_t getCell(uint8_t row, uint8_t column) const;
 
     void setCell(uint8_t row, uint8_t columns, uint8_t newValue);
+
+
     void printState(){
-        for(int a = 0; a < 4; a++)
-            for(int b = 0; b<4; b++)
-                std::cout<<std::hex<<(uint16_t)stateArray[STATE_AT(a,b)];
+        for(int a = 0; a < STATE_DIM; a++)
+                std::cout<<std::setfill('0') << std::setw(2) <<std::hex<<(uint16_t)stateArray[a];
         std::cout<<std::endl;
     }
 
@@ -50,7 +49,7 @@ public:
     void mixColumns();
     void invMixColumns();
 
-    void addRoundKey();
+    void addRoundKey(const AESKey& key, uint8_t round);
 
     void subBytes();
     void invSubBytes();

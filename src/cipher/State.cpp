@@ -5,46 +5,42 @@
 #include "State.h"
 
 void State::shiftRows(uint8_t *const state) {
-    ARR_SWAP(state, STATE_AT(1, 0), STATE_AT(1, 1)); // -> 11 10 12 13
-    ARR_SWAP(state, STATE_AT(1, 1), STATE_AT(1, 2)); // -> 11 12 10 13
-    ARR_SWAP(state, STATE_AT(1, 2), STATE_AT(1, 3)); // -> 11 12 13 10
-    ARR_SWAP(state, STATE_AT(2, 0), STATE_AT(2, 2)); // -> 22 21 20 23
-    ARR_SWAP(state, STATE_AT(2, 1), STATE_AT(2, 3)); // -> 22 23 20 21
-    ARR_SWAP(state, STATE_AT(3, 3), STATE_AT(3, 2)); // -> 30 31 33 32
-    ARR_SWAP(state, STATE_AT(3, 2), STATE_AT(3, 1)); // -> 30 33 31 32
-    ARR_SWAP(state, STATE_AT(3, 1), STATE_AT(3, 0)); // -> 33 30 31 32
+    SHIFT_RIGHT_THREE_TIMES(state, 1);
+    SHIFT_LEFT_TWO_TIMES(state, 2);
+    SHIFT_LEFT_THREE_TIMES(state,3);
 }
 
 void State::invShiftRows(uint8_t *const state) {
-    ARR_SWAP(state, STATE_AT(1, 3), STATE_AT(1, 2)); // -> 10 11 13 12
-    ARR_SWAP(state, STATE_AT(1, 2), STATE_AT(1, 1)); // -> 10 13 11 12
-    ARR_SWAP(state, STATE_AT(1, 1), STATE_AT(1, 0)); // -> 13 10 11 12
-    ARR_SWAP(state, STATE_AT(2, 0), STATE_AT(2, 2)); // -> 22 21 20 23
-    ARR_SWAP(state, STATE_AT(2, 1), STATE_AT(2, 3)); // -> 22 23 20 21
-    ARR_SWAP(state, STATE_AT(3, 0), STATE_AT(3, 1)); // -> 31 30 32 33
-    ARR_SWAP(state, STATE_AT(3, 1), STATE_AT(3, 2)); // -> 31 32 30 33
-    ARR_SWAP(state, STATE_AT(3, 2), STATE_AT(3, 3)); // -> 31 32 33 30
+    SHIFT_LEFT_THREE_TIMES(state,1);
+    SHIFT_LEFT_TWO_TIMES(state,2);
+    SHIFT_RIGHT_THREE_TIMES(state, 3);
 }
 
 void State::mixColumns(uint8_t *const state) {
-    DECL_MIX_VARS
+    uint8_t s0c, s1c, s2c, s3c;
     for (uint8_t c = 0; c < COLUMNS; c++) {
-        INIT_MIX_VARS(state, c);
-        state[STATE_AT(0, c)] = MIX_SOLVE_ROW_0;
-        state[STATE_AT(1, c)] = MIX_SOLVE_ROW_1;
-        state[STATE_AT(2, c)] = MIX_SOLVE_ROW_2;
-        state[STATE_AT(3, c)] = MIX_SOLVE_ROW_3;
+        s0c = state[STATE_AT(0, c)];
+        s1c = state[STATE_AT(1, c)];
+        s2c = state[STATE_AT(2, c)];
+        s3c = state[STATE_AT(3, c)];
+        state[STATE_AT(0, c)] = BMUL(s0c, 2) ^ BMUL(s1c, 3) ^ s2c ^ s3c;
+        state[STATE_AT(1, c)] = s0c ^ BMUL(s1c, 2) ^ BMUL(s2c, 3) ^ s3c;
+        state[STATE_AT(2, c)] = s0c ^ s1c ^ BMUL(s2c, 2) ^ BMUL(s3c, 3);
+        state[STATE_AT(3, c)] = BMUL(s0c, 3) ^ s1c ^ s2c ^ BMUL(s3c, 2);
     }
 }
 
 void State::invMixColumns(uint8_t *const state) {
-    DECL_INV_MIX_VARS
+    uint8_t s0c, s1c, s2c, s3c;
     for (uint8_t c = 0; c < COLUMNS; c++) {
-        INIT_INV_MIX_VARS(state, c);
-        state[STATE_AT(0, c)] = INV_MIX_SOLVE_ROW_0;
-        state[STATE_AT(1, c)] = INV_MIX_SOLVE_ROW_1;
-        state[STATE_AT(2, c)] = INV_MIX_SOLVE_ROW_2;
-        state[STATE_AT(3, c)] = INV_MIX_SOLVE_ROW_3;
+        s0c = state[STATE_AT(0, c)];
+        s1c = state[STATE_AT(1, c)];
+        s2c = state[STATE_AT(2, c)];
+        s3c = state[STATE_AT(3, c)];
+        state[STATE_AT(0, c)] = BMUL(s0c, E) ^ BMUL(s1c, B) ^ BMUL(s2c, D) ^ BMUL(s3c, 9);
+        state[STATE_AT(1, c)] = BMUL(s0c, 9) ^ BMUL(s1c, E) ^ BMUL(s2c, B) ^ BMUL(s3c, D);
+        state[STATE_AT(2, c)] = BMUL(s0c, D) ^ BMUL(s1c, 9) ^ BMUL(s2c, E) ^ BMUL(s3c, B);
+        state[STATE_AT(3, c)] = BMUL(s0c, B) ^ BMUL(s1c, D) ^ BMUL(s2c, 9) ^ BMUL(s3c, E);
     }
 }
 

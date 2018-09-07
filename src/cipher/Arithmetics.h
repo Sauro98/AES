@@ -11,7 +11,7 @@
 #define ROWS 4
 #define COLUMNS 4
 
-#define STATE_AT(x, y) ((x) + (y)*COLUMNS )
+#define STATE_AT(x, y) static_cast<uint8_t>(((x) + (y)*COLUMNS ))
 
 #define MUL_POLYNOMIAL 0x11B
 #define BYTES_IN_WORD 4U
@@ -20,33 +20,12 @@
 
 #define OVERFLOW_IF_SHIFT(val) ((val) >= 0x80)
 
-#define BIT_MUL_02 XTIME
-
-inline uint8_t XTIME(uint8_t val){
+inline uint8_t XTIME(const uint8_t val) {
     uint8_t toReturn = val;
     toReturn <<= 1;
-    if(OVERFLOW_IF_SHIFT(val))
+    if (OVERFLOW_IF_SHIFT(val))
         toReturn ^= MUL_POLYNOMIAL;
     return toReturn;
-}
-
-inline uint8_t BIT_MUL_03(uint8_t val, uint8_t xtimeVal){
-    return xtimeVal^val;
-}
-
-inline uint8_t BIT_MUL_09(uint8_t val, uint8_t xtime3Val){
-    return XTIME(xtime3Val) ^ val;
-}
-
-inline uint8_t BIT_MUL_0B(uint8_t xtimeVal, uint8_t bitMul09){
-    return bitMul09 ^ xtimeVal;
-}
-
-inline uint8_t BIT_MUL_0D(uint8_t xtime3Val, uint8_t bitMul09){
-    return xtime3Val^bitMul09;
-}
-inline uint8_t BIT_MUL_0E(uint8_t val, uint8_t xTimeVal, uint8_t bitMul0D){
-    return bitMul0D ^ xTimeVal ^ val;
 }
 
 inline uint8_t BIT_MUL(const uint8_t n1, const uint8_t n2) {
@@ -57,7 +36,7 @@ inline uint8_t BIT_MUL(const uint8_t n1, const uint8_t n2) {
     // To do so loop through all of times bits and get every bit that is equal to 1
     while (times > 0) {
         if (times & 1) res ^= xTimeValue;
-        xTimeValue =  XTIME(xTimeValue);
+        xTimeValue = XTIME(xTimeValue);
         times >>= 1;
     }
     return res;
@@ -75,5 +54,30 @@ inline void ROTATE_WORD(uint8_t *const word) {
     word[3] = tmp;
 }
 
+inline void SHIFT_LEFT_THREE_TIMES(uint8_t * const state,const uint8_t row) {
+    uint8_t temp = state[STATE_AT(row,0)];
+    state[STATE_AT(row,0)] =  state[STATE_AT(row,3)];
+    state[STATE_AT(row,3)] = state[STATE_AT(row,2)];
+    state[STATE_AT(row,2)] = state[STATE_AT(row,1)];
+    state[STATE_AT(row,1)] = temp;
+
+}
+
+inline void SHIFT_LEFT_TWO_TIMES(uint8_t * const state,const  uint8_t row) {
+    uint8_t temp1 = state[STATE_AT(row,2)];
+    uint8_t temp2 = state[STATE_AT(row,3)];
+    state[STATE_AT(row,2)] = state[STATE_AT(row, 0)];
+    state[STATE_AT(row,3)] = state[STATE_AT(row, 1)];
+    state[STATE_AT(row,0)] = temp1;
+    state[STATE_AT(row,1)] = temp2;
+}
+
+inline void SHIFT_RIGHT_THREE_TIMES(uint8_t * const state,const uint8_t row) {
+    uint8_t temp = state[STATE_AT(row,0)];
+    state[STATE_AT(row,0)] = state[STATE_AT(row, 1)];
+    state[STATE_AT(row,1)] = state[STATE_AT(row, 2)];
+    state[STATE_AT(row,2)] = state[STATE_AT(row, 3)];
+    state[STATE_AT(row,3)] = temp;
+}
 
 #endif //AES_ARITHMETICS_H

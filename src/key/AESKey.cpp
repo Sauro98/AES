@@ -26,7 +26,7 @@ AESKey::AESKey(const uint8_t *_key, const uint16_t length) {
 }
 
 void AESKey::expandKey(const uint8_t *original, uint8_t keyWords) {
-    uint8_t* expanded = new uint8_t[(rounds + 1) * WORDS_NUMBER * BYTES_IN_WORD];
+    auto * expanded = new uint8_t[(rounds + 1) * WORDS_NUMBER * BYTES_IN_WORD];
 
     uint8_t pow = 0x01;
     for (uint16_t index = 0; index < (keyWords * BYTES_IN_WORD); index++)
@@ -53,7 +53,7 @@ void AESKey::expandKey(const uint8_t *original, uint8_t keyWords) {
 
 
     key = expanded;
-    uint8_t* eqKey = new uint8_t[(rounds + 1) * WORDS_NUMBER * BYTES_IN_WORD];
+    auto * eqKey = new uint8_t[(rounds + 1) * WORDS_NUMBER * BYTES_IN_WORD];
     for(size_t a = 0;  a < (rounds + 1) * WORDS_NUMBER * BYTES_IN_WORD; a++){
         eqKey[a] = expanded[a];
     }

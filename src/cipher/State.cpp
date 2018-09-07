@@ -27,36 +27,24 @@ void State::invShiftRows(uint8_t *const state) {
 }
 
 void State::mixColumns(uint8_t *const state) {
-    uint8_t s0c;
-    uint8_t s1c;
-    uint8_t s2c;
-    uint8_t s3c;
+    DECL_MIX_VARS
     for (uint8_t c = 0; c < COLUMNS; c++) {
-        s0c = state[STATE_AT(0, c)];
-        s1c = state[STATE_AT(1, c)];
-        s2c = state[STATE_AT(2, c)];
-        s3c = state[STATE_AT(3, c)];
-        state[STATE_AT(0, c)] = BIT_MUL_02(s0c) ^ BIT_MUL_03(s1c) ^ s2c ^ s3c;
-        state[STATE_AT(1, c)] = s0c ^ BIT_MUL_02(s1c) ^ BIT_MUL_03(s2c) ^ s3c;
-        state[STATE_AT(2, c)] = s0c ^ s1c ^ BIT_MUL_02(s2c) ^ BIT_MUL_03(s3c);
-        state[STATE_AT(3, c)] = BIT_MUL_03(s0c) ^ s1c ^ s2c ^ BIT_MUL_02(s3c);
+        INIT_MIX_VARS(state, c);
+        state[STATE_AT(0, c)] = MIX_SOLVE_ROW_0;
+        state[STATE_AT(1, c)] = MIX_SOLVE_ROW_1;
+        state[STATE_AT(2, c)] = MIX_SOLVE_ROW_2;
+        state[STATE_AT(3, c)] = MIX_SOLVE_ROW_3;
     }
 }
 
 void State::invMixColumns(uint8_t *const state) {
-    uint8_t s0c;
-    uint8_t s1c;
-    uint8_t s2c;
-    uint8_t s3c;
+    DECL_INV_MIX_VARS
     for (uint8_t c = 0; c < COLUMNS; c++) {
-        s0c = state[STATE_AT(0, c)];
-        s1c = state[STATE_AT(1, c)];
-        s2c = state[STATE_AT(2, c)];
-        s3c = state[STATE_AT(3, c)];
-        state[STATE_AT(0, c)] = BIT_MUL_0E(s0c) ^ BIT_MUL_0B(s1c) ^ BIT_MUL_0D(s2c) ^ BIT_MUL_09(s3c);
-        state[STATE_AT(1, c)] = BIT_MUL_09(s0c) ^ BIT_MUL_0E(s1c) ^ BIT_MUL_0B(s2c) ^ BIT_MUL_0D(s3c);
-        state[STATE_AT(2, c)] = BIT_MUL_0D(s0c) ^ BIT_MUL_09(s1c) ^ BIT_MUL_0E(s2c) ^ BIT_MUL_0B(s3c);
-        state[STATE_AT(3, c)] = BIT_MUL_0B(s0c) ^ BIT_MUL_0D(s1c) ^ BIT_MUL_09(s2c) ^ BIT_MUL_0E(s3c);
+        INIT_INV_MIX_VARS(state, c);
+        state[STATE_AT(0, c)] = INV_MIX_SOLVE_ROW_0;
+        state[STATE_AT(1, c)] = INV_MIX_SOLVE_ROW_1;
+        state[STATE_AT(2, c)] = INV_MIX_SOLVE_ROW_2;
+        state[STATE_AT(3, c)] = INV_MIX_SOLVE_ROW_3;
     }
 }
 
@@ -64,7 +52,7 @@ void State::invMixColumns(uint8_t *const state) {
 void State::addRoundKey(uint8_t *const state, const uint8_t *const key) {
     for (uint8_t column = 0; column < COLUMNS; column++) {
         for (uint8_t row = 0; row < ROWS; row++) {
-            state[STATE_AT(row, column)] ^=  key[STATE_AT(row, column)];
+            state[STATE_AT(row, column)] ^= key[STATE_AT(row, column)];
         }
     }
 }

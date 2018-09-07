@@ -4,8 +4,6 @@
 
 #include <gtest/gtest.h>
 #include "../src/cipher/State.h"
-const uint8_t mockKeyArray[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-const AESKey mockKey(mockKeyArray,16);
 
 
 TEST(State, BIT_SUM) {

@@ -30,23 +30,23 @@ inline uint8_t XTIME(uint8_t val){
     return toReturn;
 }
 
-inline uint8_t BIT_MUL_03(uint8_t val){
-    return XTIME(val)^val;
+inline uint8_t BIT_MUL_03(uint8_t val, uint8_t xtimeVal){
+    return xtimeVal^val;
 }
 
-inline uint8_t BIT_MUL_09(uint8_t val){
-    return XTIME(XTIME(XTIME(val))) ^ val;
+inline uint8_t BIT_MUL_09(uint8_t val, uint8_t xtime3Val){
+    return XTIME(xtime3Val) ^ val;
 }
 
-inline uint8_t BIT_MUL_0B(uint8_t val){
-    return BIT_MUL_09(val) ^ XTIME(val);
+inline uint8_t BIT_MUL_0B(uint8_t xtimeVal, uint8_t bitMul09){
+    return bitMul09 ^ xtimeVal;
 }
 
-inline uint8_t BIT_MUL_0D(uint8_t val){
-    return XTIME(XTIME(val))^BIT_MUL_09(val);
+inline uint8_t BIT_MUL_0D(uint8_t xtime3Val, uint8_t bitMul09){
+    return xtime3Val^bitMul09;
 }
-inline uint8_t BIT_MUL_0E(uint8_t val){
-    return BIT_MUL_0D(val) ^ XTIME(val) ^ val;
+inline uint8_t BIT_MUL_0E(uint8_t val, uint8_t xTimeVal, uint8_t bitMul0D){
+    return bitMul0D ^ xTimeVal ^ val;
 }
 
 inline uint8_t BIT_MUL(const uint8_t n1, const uint8_t n2) {

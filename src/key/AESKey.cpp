@@ -6,6 +6,7 @@
 #include "AESKey.h"
 #include "../cipher/SBox.h"
 #include "InvalidKeyLengthException.h"
+#include "../cipher/State.h"
 
 AESKey::AESKey(const uint8_t *_key, const uint16_t length) {
     if (length == BYTES_FOR_128) {
@@ -57,22 +58,10 @@ void AESKey::expandKey(const uint8_t *original, uint8_t keyWords) {
         eqKey[a] = expanded[a];
     }
 
-    uint8_t s0c;
-    uint8_t s1c;
-    uint8_t s2c;
-    uint8_t s3c;
+
     for(uint16_t index = 1; index < rounds; index++){
         uint8_t* arr = &eqKey[KEY_ROUND_INDEX(index)];
-        for (uint8_t c = 0; c < BYTES_IN_WORD; c++) {
-            s0c = arr[STATE_AT(0, c)];
-            s1c = arr[STATE_AT(1, c)];
-            s2c = arr[STATE_AT(2, c)];
-            s3c = arr[STATE_AT(3, c)];
-            arr[STATE_AT(0, c)] = BIT_MUL_0E(s0c) ^ BIT_MUL_0B(s1c) ^ BIT_MUL_0D(s2c) ^ BIT_MUL_09(s3c);
-            arr[STATE_AT(1, c)] = BIT_MUL_09(s0c) ^ BIT_MUL_0E(s1c) ^ BIT_MUL_0B(s2c) ^ BIT_MUL_0D(s3c);
-            arr[STATE_AT(2, c)] = BIT_MUL_0D(s0c) ^ BIT_MUL_09(s1c) ^ BIT_MUL_0E(s2c) ^ BIT_MUL_0B(s3c);
-            arr[STATE_AT(3, c)] = BIT_MUL_0B(s0c) ^ BIT_MUL_0D(s1c) ^ BIT_MUL_09(s2c) ^ BIT_MUL_0E(s3c);
-        }
+        State::invMixColumns(arr);
     }
     eqInvKey = eqKey;
 }

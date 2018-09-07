@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <iostream>
 #include "State.h"
+#include "../key/AESKey.h"
 #include <fstream>
 #include <sstream>
 

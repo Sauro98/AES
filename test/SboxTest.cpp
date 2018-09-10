@@ -23,7 +23,7 @@ TEST(SBOX, subWord) {
 
 TEST(SBOX, rotateWord) {
     uint8_t orig[] = {0x04, 0x01, 0x02, 0x03};
-    ROTATE_WORD(orig);
+    AESArithmetics::ROTATE_WORD(orig);
     EXPECT_EQ(orig[0], 0x01);
     EXPECT_EQ(orig[1], 0x02);
     EXPECT_EQ(orig[2], 0x03);

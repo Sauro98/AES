@@ -25,37 +25,37 @@
 #define KEY_ROUND_INDEX(round) (BYTES_IN_WORD * ( (round) * WORDS_NUMBER))
 
 
-#define NEXT_POW(pow) pow = BIT_MUL(pow, 0x02);
-#define CREATE_POW_ROT_WORD(pow) uint8_t aes_pow_rot_word[4] = {0x00, 0x00, 0x00, 0x00};\
+#define NEXT_POW(pow) pow = AESArithmetics::BIT_MUL(pow, 0x02);
+#define CREATE_POW_ROT_WORD(pow) fast_uint8 aes_pow_rot_word[4] = {0x00, 0x00, 0x00, 0x00};\
                              aes_pow_rot_word[0] = pow;\
                              NEXT_POW(pow);
 #define POW_ROT_WORD aes_pow_rot_word
 #define ROTATE_WITH_POW(word, pow) CREATE_POW_ROT_WORD(pow);\
-                          WORD_SUM(word, POW_ROT_WORD, word);
+                          AESArithmetics::WORD_SUM(word, POW_ROT_WORD, word);
 
 class AESKey {
-    const uint8_t *key;
-    const uint8_t *eqInvKey;
+    const fast_uint8 *key;
+    const fast_uint8 *eqInvKey;
 public:
-    uint8_t rounds;
+    fast_uint8 rounds;
 
-    AESKey(const uint8_t *_key, uint16_t length);
+    AESKey(const fast_uint8 *_key, uint16_t length);
 
-    ~AESKey() { delete[](key); }
+    ~AESKey() { delete[](key); delete[](eqInvKey); }
 
-    const uint8_t *getKeyWordAt(uint8_t index) {
+    const fast_uint8 *getKeyWordAt(fast_uint8 index) {
         return &key[index * BYTES_IN_WORD];
     }
 
-    const uint8_t *getKeyForRound(uint8_t round) const {
+    const fast_uint8 *getKeyForRound(fast_uint8 round) const {
         return &key[KEY_ROUND_INDEX(round)];
     }
 
-    const uint8_t *getEqInvKeyForRound(uint8_t round) const {
+    const fast_uint8 *getEqInvKeyForRound(fast_uint8 round) const {
         return &eqInvKey[KEY_ROUND_INDEX(round)];
     }
 
-    void expandKey(const uint8_t *original, uint8_t keyWords);
+    void expandKey(const fast_uint8* original, fast_uint8 keyWords);
 };
 
 #endif //AES_KEY_H

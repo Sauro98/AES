@@ -13,19 +13,19 @@
 #include "SBox.h"
 
 namespace State {
-    void shiftRows(uint8_t *state);
+    void shiftRows(fast_uint8 *state);
 
-    void invShiftRows(uint8_t *state);
+    void invShiftRows(fast_uint8 *state);
 
-    void mixColumns(uint8_t *state);
+    void mixColumns(fast_uint8 *state);
 
-    void invMixColumns(uint8_t *state);
+    void invMixColumns(fast_uint8 *state);
 
-    void addRoundKey(uint8_t *state, const uint8_t *key);
+    void addRoundKey(fast_uint8 *state, const fast_uint8 *key);
 
-    inline void subBytes(uint8_t *const state) { SELF_SUB_BYTES(state); };
+    inline void subBytes(fast_uint8 *const state) { SELF_SUB_BYTES(state); };
 
-    inline void invSubBytes(uint8_t *const state) { SELF_INV_SUB_BYTES(state); };
+    inline void invSubBytes(fast_uint8 *const state) { SELF_INV_SUB_BYTES(state); };
 };
 
 

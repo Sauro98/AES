@@ -22,13 +22,13 @@ TEST(State, BIT_SUM) {
 
 TEST(State, xtime) {
     uint16_t v1 = 0x57;
-    v1 = XTIME(v1);
+    v1 = AESArithmetics::XTIME(v1);
     EXPECT_EQ(v1, 0xAE);
-    v1 = XTIME(v1);
+    v1 = AESArithmetics::XTIME(v1);
     EXPECT_EQ(v1, 0x47);
-    v1 = XTIME(v1);
+    v1 = AESArithmetics::XTIME(v1);
     EXPECT_EQ(v1, 0x8E);
-    v1 = XTIME(v1);
+    v1 = AESArithmetics::XTIME(v1);
     EXPECT_EQ(v1, 0x07);
 }
 
@@ -37,7 +37,7 @@ TEST(State, WORD_SUM) {
     uint8_t w2[] = {0x4, 0x3, 0x3, 0x2};
     uint8_t exp[] = {0x5, 0x1, 0x0, 0x6};
     uint8_t res[4];
-    WORD_SUM(w1, w2, res);
+    AESArithmetics::WORD_SUM(w1, w2, res);
     for (uint8_t a = 0; a < 4; a++)
         EXPECT_EQ(res[a], exp[a]);
 }

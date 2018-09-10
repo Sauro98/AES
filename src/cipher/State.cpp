@@ -4,21 +4,21 @@
 
 #include "State.h"
 
-void State::shiftRows(uint8_t *const state) {
-    SHIFT_RIGHT_THREE_TIMES(state, 1);
-    SHIFT_LEFT_TWO_TIMES(state, 2);
-    SHIFT_LEFT_THREE_TIMES(state,3);
+void State::shiftRows(fast_uint8 *const state) {
+    AESArithmetics::SHIFT_RIGHT_THREE_TIMES(state, 1);
+    AESArithmetics::SHIFT_LEFT_TWO_TIMES(state, 2);
+    AESArithmetics::SHIFT_LEFT_THREE_TIMES(state,3);
 }
 
-void State::invShiftRows(uint8_t *const state) {
-    SHIFT_LEFT_THREE_TIMES(state,1);
-    SHIFT_LEFT_TWO_TIMES(state,2);
-    SHIFT_RIGHT_THREE_TIMES(state, 3);
+void State::invShiftRows(fast_uint8 *const state) {
+    AESArithmetics::SHIFT_LEFT_THREE_TIMES(state,1);
+    AESArithmetics::SHIFT_LEFT_TWO_TIMES(state,2);
+    AESArithmetics::SHIFT_RIGHT_THREE_TIMES(state, 3);
 }
 
-void State::mixColumns(uint8_t *const state) {
-    uint8_t s0c, s1c, s2c, s3c;
-    for (uint8_t c = 0; c < COLUMNS; c++) {
+void State::mixColumns(fast_uint8 *const state) {
+    fast_uint8 s0c, s1c, s2c, s3c;
+    for (fast_uint8 c = 0; c < COLUMNS; c++) {
         s0c = state[STATE_AT(0, c)];
         s1c = state[STATE_AT(1, c)];
         s2c = state[STATE_AT(2, c)];
@@ -30,9 +30,9 @@ void State::mixColumns(uint8_t *const state) {
     }
 }
 
-void State::invMixColumns(uint8_t *const state) {
-    uint8_t s0c, s1c, s2c, s3c;
-    for (uint8_t c = 0; c < COLUMNS; c++) {
+void State::invMixColumns(fast_uint8 *const state) {
+    fast_uint8 s0c, s1c, s2c, s3c;
+    for (fast_uint8 c = 0; c < COLUMNS; c++) {
         s0c = state[STATE_AT(0, c)];
         s1c = state[STATE_AT(1, c)];
         s2c = state[STATE_AT(2, c)];
@@ -45,9 +45,9 @@ void State::invMixColumns(uint8_t *const state) {
 }
 
 
-void State::addRoundKey(uint8_t *const state, const uint8_t *const key) {
-    for (uint8_t column = 0; column < COLUMNS; column++) {
-        for (uint8_t row = 0; row < ROWS; row++) {
+void State::addRoundKey(fast_uint8 *const state, const fast_uint8 *const key) {
+    for (fast_uint8 column = 0; column < COLUMNS; column++) {
+        for (fast_uint8 row = 0; row < ROWS; row++) {
             state[STATE_AT(row, column)] ^= key[STATE_AT(row, column)];
         }
     }

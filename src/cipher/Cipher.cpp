@@ -4,9 +4,9 @@
 
 #include "Cipher.h"
 
-void Cipher::crypt(uint8_t *input) const {
+void Cipher::crypt(fast_uint8 *input) const {
     State::addRoundKey(input, key.getKeyForRound(0));
-    for (uint8_t round = 1; round < key.rounds; round++) {
+    for (fast_uint8 round = 1; round < key.rounds; round++) {
         State::subBytes(input);
         State::shiftRows(input);
         State::mixColumns(input);
@@ -17,9 +17,9 @@ void Cipher::crypt(uint8_t *input) const {
     State::addRoundKey(input, key.getKeyForRound(key.rounds));
 }
 
-void Cipher::decrypt(uint8_t *input) const {
+void Cipher::decrypt(fast_uint8 *input) const {
     State::addRoundKey(input,key.getEqInvKeyForRound(key.rounds));
-    for (auto round = static_cast<uint8_t>(key.rounds - 1); round > 0; round--) {
+    for (auto round = static_cast<fast_uint8>(key.rounds - 1); round > 0; round--) {
         State::invSubBytes(input);
         State::invShiftRows(input);
         State::invMixColumns(input);
@@ -30,10 +30,10 @@ void Cipher::decrypt(uint8_t *input) const {
     State::addRoundKey(input,key.getEqInvKeyForRound(0));
 }
 
-std::unique_ptr<uint8_t[]> Cipher::cryptFile(const char *filename) const {
+std::unique_ptr<fast_uint8[]> Cipher::cryptFile(const char *filename) const {
     size_t lenght;
-    uint8_t *fileContent = readFile(filename, &lenght);
-    uint8_t* currHead = &fileContent[0];
+    fast_uint8 *fileContent = readFile(filename, &lenght);
+    fast_uint8* currHead = &fileContent[0];
     size_t loopTop = lenght/STATE_DIM;
     std::cout<<"start crypting: "<<lenght/STATE_DIM<<" iterations"<<std::endl;
     for (size_t index = 0; index < loopTop; index++) {
@@ -42,13 +42,13 @@ std::unique_ptr<uint8_t[]> Cipher::cryptFile(const char *filename) const {
     }
     std::cout<<"Finished"<<std::endl;
     writeToFile(filename, fileContent, lenght);
-    return std::unique_ptr<uint8_t[]>( fileContent);
+    return std::unique_ptr<fast_uint8[]>( fileContent);
 }
 
-std::unique_ptr<uint8_t[]> Cipher::decryptFile(const char *filename) const {
+std::unique_ptr<fast_uint8[]> Cipher::decryptFile(const char *filename) const {
     size_t lenght;
-    uint8_t *fileContent = readFile(filename, &lenght);
-    uint8_t* currHead = &fileContent[0];
+    fast_uint8 *fileContent = readFile(filename, &lenght);
+    fast_uint8* currHead = &fileContent[0];
     std::cout<<"start decrypting: "<<lenght/STATE_DIM<<" iterations"<<std::endl;
     for (size_t index = 0; index < lenght; index += STATE_DIM) {
         decrypt(currHead);
@@ -56,13 +56,13 @@ std::unique_ptr<uint8_t[]> Cipher::decryptFile(const char *filename) const {
     }
     std::cout<<"Finished"<<std::endl;
     writeToFile(filename, fileContent, lenght);
-    return std::unique_ptr<uint8_t[]>(fileContent);
+    return std::unique_ptr<fast_uint8[]>(fileContent);
 }
 
-uint8_t *Cipher::readFile(const char *fileName, size_t *lenght) const {
+fast_uint8 *Cipher::readFile(const char *fileName, size_t *lenght) const {
     FILE * pFile;
     size_t lSize;
-    uint8_t * buffer;
+    fast_uint8 * buffer;
     size_t result;
     pFile = fopen(fileName, "rb");
     if (pFile == NULL) {
@@ -78,7 +78,7 @@ uint8_t *Cipher::readFile(const char *fileName, size_t *lenght) const {
     while((*lenght)%16 != 0)
         (*lenght)++;
     // allocate memory to contain the whole file:
-    buffer = new uint8_t[*lenght];
+    buffer = new fast_uint8[*lenght];
     // copy the file into the buffer:
     result = fread(buffer, 1, lSize, pFile);
     if (result != lSize) {
@@ -92,7 +92,7 @@ uint8_t *Cipher::readFile(const char *fileName, size_t *lenght) const {
     return buffer;
 }
 
-void Cipher::writeToFile(const char *fileName, const uint8_t *content, size_t lenght) const {
+void Cipher::writeToFile(const char *fileName, const fast_uint8 *content, size_t lenght) const {
 
     std::ofstream output_file;
     output_file.open(fileName, std::ios::binary);

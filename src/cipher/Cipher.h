@@ -15,18 +15,18 @@
 class Cipher {
     AESKey key;
 public:
-    Cipher(const uint8_t *_key, const uint8_t _key_length) : key(_key, _key_length) {}
+    Cipher(const fast_uint8 *_key, const fast_uint8 _key_length) : key(_key, _key_length) {}
 
-    void crypt(uint8_t *input) const;
+    void crypt(fast_uint8 *input) const;
 
-    void decrypt(uint8_t *input) const;
+    void decrypt(fast_uint8 *input) const;
 
-    std::unique_ptr<uint8_t[]> cryptFile(const char* filename) const;
-    std::unique_ptr<uint8_t[]> decryptFile(const char* filename) const;
+    std::unique_ptr<fast_uint8[]> cryptFile(const char* filename) const;
+    std::unique_ptr<fast_uint8[]> decryptFile(const char* filename) const;
 
 private:
-    uint8_t* readFile(const char* fileName, size_t* lenght) const;
-    void writeToFile(const char* fileName, const uint8_t* content, size_t length) const;
+    fast_uint8* readFile(const char* fileName, size_t* lenght) const;
+    void writeToFile(const char* fileName, const fast_uint8* content, size_t length) const;
 };
 
 #endif //AES_CIPHER_H

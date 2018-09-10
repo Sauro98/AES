@@ -6,6 +6,7 @@
 #define AES_BITMULCONSTANTS_H
 
 #include <cstdint>
+#include "Arithmetics.h"
 
 #define BMUL(val, times) CONST_BIT_MUL_0##times(val)
 
@@ -16,7 +17,7 @@
 #define CONST_BIT_MUL_0D(val) BIT_MUL_CONSTANTS[val][4]
 #define CONST_BIT_MUL_0E(val) BIT_MUL_CONSTANTS[val][5]
 
-const uint8_t BIT_MUL_CONSTANTS[][6] = {
+const fast_uint8 BIT_MUL_CONSTANTS[][6] = {
         /*2     3     9     B     D     E*/
         {0x00, 0x00, 0x00, 0x00, 0x00, 0x00}, // 0x00
         {0x02, 0x03, 0x09, 0x0b, 0x0d, 0x0e}, // 0x01
